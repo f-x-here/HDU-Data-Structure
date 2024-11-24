@@ -74,7 +74,7 @@ public:
 	void Awake(string _name, double _weight, int _curFloor, int _targetFloor, int _maxWaitTime);
 	void UpdateLogic();
 	void UpdateAnim();
-	bool operator==(const Guest& rhs)
+	bool operator==(const Guest &rhs)
 	{
 		return rhs.name == name;
 	}
@@ -114,13 +114,13 @@ private:
 public:
 	void Start();
 
-	void GuestGenerate(Guest& requester);
+	void GuestGenerate(Guest &requester);
 	void ElevatorMoving();
 	void ElevatorArrived();
 	void ElevatorWaiting();
-	bool GuestToElevator(Guest& requester);
-	void GuestLeaveElevator(Guest& requester);
-	void GuestLeaveFloor(Guest& requester);
+	bool GuestToElevator(Guest &requester);
+	void GuestLeaveElevator(Guest &requester);
+	void GuestLeaveFloor(Guest &requester);
 	void UpdateMessageList(string message);
 	void UpdateAnim();
 
@@ -399,7 +399,7 @@ void Elevator::UpdateLogic()
 				{
 					targetFloor.pop_front();
 				}
-				if (curSize == maxSize) //满载下客位置停靠
+				if (curSize == maxSize) // 满载下客位置停靠
 				{
 					rulesManager.CheckRules(14);
 				}
@@ -613,15 +613,15 @@ void Guest::ShowInfo()
 		break;
 	}
 	cout << std::left << setw(6) << name
-		<< std::left << setw(6) << weight
-		<< std::left << setw(10) << curFloor
-		<< std::left << setw(10) << targetFloor
-		<< std::left << setw(10) << createTime
-		<< std::left << setw(10) << waitTime
-		<< std::left << setw(10) << inElevatorTime
-		<< std::left << setw(10) << outElevatorTime
-		<< std::left << setw(10) << leaveTime
-		<< std::left << setw(15) << state;
+		 << std::left << setw(6) << weight
+		 << std::left << setw(10) << curFloor
+		 << std::left << setw(10) << targetFloor
+		 << std::left << setw(10) << createTime
+		 << std::left << setw(10) << waitTime
+		 << std::left << setw(10) << inElevatorTime
+		 << std::left << setw(10) << outElevatorTime
+		 << std::left << setw(10) << leaveTime
+		 << std::left << setw(15) << state;
 }
 
 #pragma endregion
@@ -649,7 +649,7 @@ void GuestManager::GenerateGuest()
 
 void GuestManager::UpdateLogic()
 {
-	for (auto& g : guestList)
+	for (auto &g : guestList)
 	{
 		g.UpdateLogic();
 	}
@@ -657,7 +657,7 @@ void GuestManager::UpdateLogic()
 
 void GuestManager::UpdateAnim()
 {
-	for (auto& g : guestList)
+	for (auto &g : guestList)
 	{
 		g.UpdateAnim();
 	}
@@ -698,7 +698,7 @@ void MessageManager::Start()
 	maxsize = 29;
 }
 
-void MessageManager::GuestGenerate(Guest& requester)
+void MessageManager::GuestGenerate(Guest &requester)
 {
 	message = to_string(Timer) + " " + requester.name + " " + "generated!"; // 我TM来啦！
 	UpdateMessageList(message);
@@ -722,7 +722,7 @@ void MessageManager::ElevatorWaiting()
 	UpdateMessageList(message);
 }
 
-bool MessageManager::GuestToElevator(Guest& requester)
+bool MessageManager::GuestToElevator(Guest &requester)
 {
 	bool getin = false;
 	if (elevator.curWeight + requester.weight > elevator.maxWeight)
@@ -747,7 +747,7 @@ bool MessageManager::GuestToElevator(Guest& requester)
 	return getin;
 }
 
-void MessageManager::GuestLeaveElevator(Guest& requester)
+void MessageManager::GuestLeaveElevator(Guest &requester)
 {
 	elevator.curWeight -= requester.weight;
 	elevator.curSize--;
@@ -755,7 +755,7 @@ void MessageManager::GuestLeaveElevator(Guest& requester)
 	UpdateMessageList(message);
 }
 
-void MessageManager::GuestLeaveFloor(Guest& requester)
+void MessageManager::GuestLeaveFloor(Guest &requester)
 {
 	if (requester.outElevatorTime != -1)
 	{
@@ -1005,11 +1005,11 @@ void RulesManager::Start()
 
 #pragma region Monobehavior
 
-void Start()
+bool Start()
 {
 	HideCursor();
 	system("cls");
-	ifstream infile("C:\\Users\\31669\\Desktop\\code\\数据结构\\elevator\\UI", std::ios::in);
+	ifstream infile("./UI", std::ios::in);
 	string line;
 	if (infile.is_open())
 	{
@@ -1018,11 +1018,16 @@ void Start()
 			cout << line << endl;
 		}
 	}
+	else
+	{
+		return false;
+	}
 	floorManager.Start();
 	elevator.Start();
 	messageManager.Start();
 	rulesManager.Start();
 	Timer = 0;
+	return true;
 }
 
 bool Update()
@@ -1057,9 +1062,10 @@ void Exit()
 #pragma region main
 int main()
 {
-	Start();
-	while (Update())
-		;
+	if (Start())
+	{
+		while (Update());
+	}
 	Exit();
 }
 #pragma endregion
